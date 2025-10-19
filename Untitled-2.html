@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Je Teste Mon Partenaire</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            margin-top: 4px;
+            min-width: 18px;
+            min-height: 18px;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+        .checkbox-group a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .question h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .result {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .result h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .result-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 20px;
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>💕 Je Teste Mon Partenaire</h1>
+            <p>Évaluez la fidélité dans votre relation</p>
+        </div>
+
+        <!-- Page d'inscription -->
+        <div id="registrationPage">
+            <h2 style="color: #333; margin-bottom: 20px;">Inscription</h2>
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="userName">Votre nom complet *</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Votre email *</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="partnerName">Nom de votre partenaire *</label>
+                    <input type="text" id="partnerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="relationshipDuration">Durée de la relation</label>
+                    <select id="relationshipDuration">
+                        <option value="moins-6-mois">Moins de 6 mois</option>
+                        <option value="6-12-mois">6 mois à 1 an</option>
+                        <option value="1-3-ans">1 à 3 ans</option>
+                        <option value="3-5-ans">3 à 5 ans</option>
+                        <option value="plus-5-ans">Plus de 5 ans</option>
+                    </select>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="termsAccept" required>
+                    <label for="termsAccept">
+                        J'accepte les <a href="#" id="showTerms">conditions d'utilisation</a> et comprends que mes réponses seront transmises de manière sécurisée au créateur de l'application à des fins d'analyse et d'amélioration du service. Je décharge le créateur de toute responsabilité juridique concernant l'utilisation de mes informations.
+                    </label>
+                </div>
+                <div id="registrationError" class="alert alert-error hidden"></div>
+                <button type="submit">Commencer le test</button>
+            </form>
+        </div>
+
+        <!-- Page du questionnaire -->
+        <div id="testPage" class="hidden">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div id="questionsContainer"></div>
+            <button id="submitTest" class="hidden">Voir mes résultats</button>
+            <div id="sendingStatus" class="loading hidden">Envoi en cours... ⏳</div>
+        </div>
+
+        <!-- Page des résultats -->
+        <div id="resultPage" class="hidden">
+            <div class="result">
+                <h2>Résultats de votre test</h2>
+                <div class="result-score" id="scoreDisplay"></div>
+                <div class="result-message" id="resultMessage"></div>
+                <button onclick="location.reload()">Recommencer un test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal des conditions d'utilisation -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <h2>Conditions d'Utilisation</h2>
+            <p><strong>1. Acceptation des conditions</strong><br>
+            En utilisant ce service, vous acceptez que vos informations personnelles et vos réponses au questionnaire soient collectées, stockées et transmises de manière sécurisée.</p>
+            
+            <p><strong>2. Collecte et utilisation des données</strong><br>
+            Vos données (nom, email, réponses au questionnaire) seront transmises au créateur de l'application (Haniel DJEBLE - hanieljean42@gmail.com) à des fins d'analyse, de recherche et d'amélioration du service.</p>
+            
+            <p><strong>3. Sécurité</strong><br>
+            Vos données sont protégées par un code de sécurité (200700) et transmises de manière sécurisée.</p>
+            
+            <p><strong>4. Décharge de responsabilité</strong><br>
+            Vous comprenez et acceptez que ce test est fourni à titre informatif uniquement. Le créateur ne peut être tenu responsable des décisions prises sur la base des résultats du test. Vous déchargez le créateur de toute responsabilité juridique concernant l'utilisation de vos informations ou les conséquences découlant de l'utilisation de ce service.</p>
+            
+            <p><strong>5. Confidentialité</strong><br>
+            Vos informations ne seront pas partagées avec des tiers sans votre consentement, sauf obligation légale.</p>
+            
+            <p><strong>6. Droit de retrait</strong><br>
+            Vous pouvez demander la suppression de vos données à tout moment en contactant hanieljean42@gmail.com</p>
+            
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeTermsModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // ✅ Initialisation correcte d'EmailJS v4
+        (function(){
+            emailjs.init({
+                publicKey: "KUgeC6svqfm7r4DTa"
+            });
+        })();
+
+        // Questions du test de fidélité
+        const questions = [
+            {
+                question: "Votre partenaire cache-t-il/elle son téléphone lorsque vous êtes ensemble ?",
+                options: ["Jamais", "Rarement", "Parfois", "Souvent", "Toujours"]
+            },
+            {
+                question: "À quelle fréquence votre partenaire sort-il/elle sans vous donner de détails ?",
+                options: ["Jamais", "Rarement", "Parfois", "Souvent", "Toujours"]
+            },
+            {
+                question: "Votre partenaire reçoit-il/elle des messages tard le soir qu'il/elle préfère lire en privé ?",
+                options: ["Jamais", "Rarement", "Parfois", "Souvent", "Toujours"]
+            },
+            {
+                question: "Votre partenaire évite-t-il/elle les conversations sur l'avenir de votre relation ?",
+                options: ["Jamais", "Rarement", "Parfois", "Souvent", "Toujours"]
+            },
+            {
+                question: "Avez-vous remarqué des changements soudains dans son apparence ou ses habitudes ?",
+                options: ["Aucun changement", "Quelques changements mineurs", "Changements modérés", "Changements significatifs", "Changements drastiques"]
+            },
+            {
+                question: "Votre partenaire est-il/elle défensif(ve) lorsque vous posez des questions sur sa journée ?",
+                options: ["Jamais", "Rarement", "Parfois", "Souvent", "Toujours"]
+            },
+            {
+                question: "Comment évaluez-vous le niveau de communication dans votre couple ?",
+                options: ["Excellente", "Bonne", "Moyenne", "Faible", "Très faible"]
+            },
+            {
+                question: "Votre partenaire annule-t-il/elle des plans avec vous à la dernière minute ?",
+                options: ["Jamais", "Rarement", "Parfois", "Souvent", "Toujours"]
+            },
+            {
+                question: "Avez-vous accès aux réseaux sociaux de votre partenaire si nécessaire ?",
+                options: ["Accès total et confiance mutuelle", "Accès partiel", "Accès limité", "Pas d'accès mais pas de problème", "Pas d'accès et cela me dérange"]
+            },
+            {
+                question: "Comment décririez-vous l'intimité dans votre relation actuellement ?",
+                options: ["Excellente", "Bonne", "Acceptable", "En déclin", "Quasi inexistante"]
+            }
+        ];
+
+        let currentUser = null;
+        let answers = [];
+
+        // Gestion de l'inscription
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const termsAccepted = document.getElementById('termsAccept').checked;
+            const errorDiv = document.getElementById('registrationError');
+            
+            if (!termsAccepted) {
+                errorDiv.textContent = 'Vous devez accepter les conditions d\'utilisation.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            errorDiv.classList.add('hidden');
+            
+            currentUser = {
+                name: document.getElementById('userName').value.trim(),
+                email: document.getElementById('userEmail').value.trim(),
+                partnerName: document.getElementById('partnerName').value.trim(),
+                relationshipDuration: document.getElementById('relationshipDuration').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            document.getElementById('registrationPage').classList.add('hidden');
+            document.getElementById('testPage').classList.remove('hidden');
+            loadQuestions();
+        });
+
+        // Afficher le modal des conditions
+        document.getElementById('showTerms').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('termsModal').style.display = 'flex';
+        });
+
+        function closeTermsModal() {
+            document.getElementById('termsModal').style.display = 'none';
+        }
+
+        // Charger les questions
+        function loadQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    <div class="options">
+                        ${q.options.map((option, optIndex) => `
+                            <label class="option">
+                                <input type="radio" name="question${index}" value="${optIndex}" required>
+                                <span>${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+            
+            // Ajouter l'écouteur pour la progression
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', updateProgress);
+            });
+        }
+
+        function updateProgress() {
+            const totalQuestions = questions.length;
+            let answeredQuestions = 0;
+            
+            for (let i = 0; i < totalQuestions; i++) {
+                const radios = document.getElementsByName(`question${i}`);
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        answeredQuestions++;
+                        break;
+                    }
+                }
+            }
+            
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            if (answeredQuestions === totalQuestions) {
+                document.getElementById('submitTest').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('submitTest').addEventListener('click', function() {
+            answers = [];
+            
+            for (let i = 0; i < questions.length; i++) {
+                const radios = document.getElementsByName(`question${i}`);
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        answers.push({
+                            question: questions[i].question,
+                            answer: questions[i].options[parseInt(radio.value)],
+                            score: parseInt(radio.value)
+                        });
+                        break;
+                    }
+                }
+            }
+            
+            // Vérifier que toutes les questions sont répondues
+            if (answers.length !== questions.length) {
+                alert('Veuillez répondre à toutes les questions.');
+                return;
+            }
+            
+            // Désactiver le bouton pendant l'envoi
+            this.disabled = true;
+            document.getElementById('sendingStatus').classList.remove('hidden');
+            
+            sendDataToCreator();
+        });
+
+        function calculateAndShowResults() {
+            const totalScore = answers.reduce((sum, a) => sum + a.score, 0);
+            const maxScore = questions.length * 4;
+            const percentage = ((maxScore - totalScore) / maxScore) * 100;
+            
+            let message = '';
+            let color = '';
+            
+            if (percentage >= 80) {
+                message = "Excellente nouvelle ! Votre relation semble très saine et basée sur la confiance. Les signes de fidélité sont très positifs.";
+                color = "#27ae60";
+            } else if (percentage >= 60) {
+                message = "Votre relation semble généralement saine, mais quelques points méritent peut-être une communication ouverte avec votre partenaire.";
+                color = "#f39c12";
+            } else if (percentage >= 40) {
+                message = "Certains signaux d'alerte sont présents. Une conversation honnête avec votre partenaire pourrait être bénéfique.";
+                color = "#e67e22";
+            } else {
+                message = "Plusieurs signaux préoccupants sont présents. Il serait sage d'avoir une discussion sérieuse avec votre partenaire sur vos préoccupations.";
+                color = "#e74c3c";
+            }
+            
+            document.getElementById('testPage').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+            document.getElementById('scoreDisplay').textContent = Math.round(percentage) + '%';
+            document.getElementById('scoreDisplay').style.color = color;
+            document.getElementById('resultMessage').innerHTML = message + 
+                '<br><br><small style="color: #999;">Note : Ce test est indicatif et ne remplace pas une communication ouverte dans votre couple.</small>';
+        }
+
+        function sendDataToCreator() {
+            const totalScore = answers.reduce((sum, a) => sum + a.score, 0);
+            const maxScore = questions.length * 4;
+            const percentage = Math.round(((maxScore - totalScore) / maxScore) * 100);
+            
+            // Préparer les réponses formatées
+            let answersText = '';
+            answers.forEach((answer, index) => {
+                answersText += `${index + 1}. ${answer.question}\n   Réponse: ${answer.answer}\n\n`;
+            });
+            
+            // Paramètres pour EmailJS - ✅ Format correct pour v4
+            const templateParams = {
+                from_name: currentUser.name,
+                from_email: currentUser.email,
+                partner_name: currentUser.partnerName,
+                relationship_duration: currentUser.relationshipDuration,
+                test_score: percentage + '%',
+                total_score: totalScore.toString(),
+                max_score: maxScore.toString(),
+                answers_detail: answersText,
+                completion_date: new Date().toLocaleString('fr-FR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                security_code: '200700'
+            };
+            
+            // ✅ Envoi avec EmailJS v4
+            emailjs.send('service_eohctur', 'template_gqz33dm', templateParams)
+                .then(function(response) {
+                    console.log('✅ Email envoyé avec succès!', response.status, response.text);
+                    document.getElementById('sendingStatus').classList.add('hidden');
+                    calculateAndShowResults();
+                }, function(error) {
+                    console.error('❌ Erreur lors de l\'envoi:', error);
+                    document.getElementById('sendingStatus').classList.add('hidden');
+                    alert('Une erreur est survenue lors de la transmission. Veuillez vérifier votre connexion internet.');
+                    document.getElementById('submitTest').disabled = false;
+                });
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const modal = document.getElementById('termsModal');
+            if (event.target === modal) {
+                closeTermsModal();
+            }
+        };
+    </script>
+</body>
+</html>
